@@ -28,12 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            SuspendLayout();
+            // 
+            // Form1
+            // 
+            ClientSize = new Size(880, 423);
+            Name = "Form1";
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private ComboBox loginRole;
+        private Button loginBtn;
+        private TextBox loginPassword;
     }
 }
