@@ -33,6 +33,7 @@ namespace eshift_management
                 {
                     // Load admin data from database to this object
 
+                    this.UId = Convert.ToInt32(reader["CustID"]); 
                     this.Name = reader["CusName"]?.ToString() ?? "";
                     this.Email = reader["CusEmail"]?.ToString() ?? "";
                     this.Password = reader["CusPassword"]?.ToString() ?? "";

@@ -12,8 +12,8 @@ namespace eshift_management
 {
     public partial class Login : Form
     {
-        public static Admin LoggedInAdmin = null; // accessible globally
-        public static Customer LoggedInCustomer = null; // accessible globally
+        public static Admin? LoggedInAdmin; // accessible globally
+        public static Customer? LoggedInCustomer; // accessible globally
 
         public Login()
         {
@@ -25,7 +25,7 @@ namespace eshift_management
             string enteredEmail = loginEmail.Text.Trim();          // input from textbox
             string enteredPassword = loginPassword.Text.Trim();    // input from textbox
 
-            // Safely get the selected role from dropdown (can be null)
+            // Safely get the selected role from dropdown (bcan be null)
             string? selectedRole = loginRole.SelectedItem?.ToString();
 
             if (string.IsNullOrEmpty(selectedRole))
@@ -63,8 +63,8 @@ namespace eshift_management
                     LoggedInCustomer = customerUser;
                     MessageBox.Show("Customer login successful!");
 
-                    AdminDashboard adminDashboard = new AdminDashboard();
-                    adminDashboard.Show();
+                    CustomerDashboard customerDashboard = new CustomerDashboard();
+                    customerDashboard.Show();
                     this.Hide();
                 }
                 else

@@ -9,9 +9,9 @@ namespace eshift_management
     public abstract class User
     {
         public int UId { get; set; }              // Unique user ID
-        public string Name { get; set; } = "";     // Name of the user
-        public string Email { get; set; } = "";        // Email used as login credential
-        public string Password { get; set; } = "";     // Password for login
+        public string? Name { get; set; }     // Name of the user
+        public string? Email { get; set; }        // Email used as login credential
+        public string? Password { get; set; }     // Password for login
 
         public abstract bool Login(string inputEmail, string inputPassword);
     }
