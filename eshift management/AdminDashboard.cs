@@ -29,5 +29,21 @@ namespace eshift_management
                 MessageBox.Show("Access denied. Please login as admin.");
             }
         }
+
+        private void untiAssignFormBtn_Click(object sender, EventArgs e)
+        {
+            AdminJobsViewForm adminJobsViewForm = new AdminJobsViewForm();
+            adminJobsViewForm.Show();
+
+            //if (Login.LoggedInAdmin != null)
+            //{
+            //    AssignTransportUnitForm assignTransportUnitForm = new AssignTransportUnitForm();
+            //    assignTransportUnitForm.Show();
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Access denied. Please login as admin.");
+            //}
+        }
     }
 }

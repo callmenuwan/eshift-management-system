@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             cusRegFormBtn = new Button();
+            untiAssignFormBtn = new Button();
             SuspendLayout();
             // 
             // cusRegFormBtn
@@ -42,11 +43,23 @@
             cusRegFormBtn.UseVisualStyleBackColor = true;
             cusRegFormBtn.Click += cusRegFormBtn_Click;
             // 
+            // untiAssignFormBtn
+            // 
+            untiAssignFormBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            untiAssignFormBtn.Location = new Point(148, 314);
+            untiAssignFormBtn.Name = "untiAssignFormBtn";
+            untiAssignFormBtn.Size = new Size(278, 60);
+            untiAssignFormBtn.TabIndex = 3;
+            untiAssignFormBtn.Text = "Assign Transport Unit";
+            untiAssignFormBtn.UseVisualStyleBackColor = true;
+            untiAssignFormBtn.Click += untiAssignFormBtn_Click;
+            // 
             // AdminDashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(untiAssignFormBtn);
             Controls.Add(cusRegFormBtn);
             Name = "AdminDashboard";
             Text = "AdminDashboard";
@@ -56,5 +69,6 @@
         #endregion
 
         private Button cusRegFormBtn;
+        private Button untiAssignFormBtn;
     }
 }
