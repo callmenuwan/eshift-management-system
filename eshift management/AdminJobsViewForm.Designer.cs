@@ -43,6 +43,7 @@
             dgvJobs.Size = new Size(998, 544);
             dgvJobs.TabIndex = 0;
             dgvJobs.CellContentClick += dgvJobs_CellContentClick;
+            dgvJobs.CellFormatting += dgvJobs_CellFormatting;
             // 
             // AdminJobsViewForm
             // 

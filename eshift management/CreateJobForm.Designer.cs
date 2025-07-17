@@ -32,16 +32,24 @@
             label1 = new Label();
             createJobBtn = new Button();
             label2 = new Label();
-            startLocation = new TextBox();
             jobDate = new MonthCalendar();
             label3 = new Label();
+            startLocation = new TextBox();
+            proName = new ComboBox();
+            addProBtn = new Button();
+            dgvProductList = new DataGridView();
+            label4 = new Label();
+            label5 = new Label();
+            proQTY = new NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)dgvProductList).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)proQTY).BeginInit();
             SuspendLayout();
             // 
             // destinationLocation
             // 
             destinationLocation.BorderStyle = BorderStyle.FixedSingle;
             destinationLocation.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            destinationLocation.Location = new Point(270, 113);
+            destinationLocation.Location = new Point(786, 359);
             destinationLocation.Name = "destinationLocation";
             destinationLocation.Size = new Size(278, 37);
             destinationLocation.TabIndex = 4;
@@ -50,7 +58,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(109, 41);
+            label1.Location = new Point(626, 293);
             label1.Name = "label1";
             label1.Size = new Size(154, 36);
             label1.TabIndex = 5;
@@ -59,7 +67,7 @@
             // createJobBtn
             // 
             createJobBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            createJobBtn.Location = new Point(270, 378);
+            createJobBtn.Location = new Point(786, 502);
             createJobBtn.Name = "createJobBtn";
             createJobBtn.Size = new Size(278, 60);
             createJobBtn.TabIndex = 6;
@@ -71,24 +79,15 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(109, 115);
+            label2.Location = new Point(626, 360);
             label2.Name = "label2";
             label2.Size = new Size(134, 36);
             label2.TabIndex = 7;
             label2.Text = "Destination ";
             // 
-            // startLocation
-            // 
-            startLocation.BorderStyle = BorderStyle.FixedSingle;
-            startLocation.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            startLocation.Location = new Point(270, 39);
-            startLocation.Name = "startLocation";
-            startLocation.Size = new Size(278, 37);
-            startLocation.TabIndex = 8;
-            // 
             // jobDate
             // 
-            jobDate.Location = new Point(270, 159);
+            jobDate.Location = new Point(802, 35);
             jobDate.Name = "jobDate";
             jobDate.TabIndex = 9;
             // 
@@ -96,17 +95,91 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label3.Location = new Point(109, 191);
+            label3.Location = new Point(626, 32);
             label3.Name = "label3";
             label3.Size = new Size(62, 36);
             label3.TabIndex = 10;
             label3.Text = "Date";
             // 
+            // startLocation
+            // 
+            startLocation.BorderStyle = BorderStyle.FixedSingle;
+            startLocation.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            startLocation.Location = new Point(786, 293);
+            startLocation.Name = "startLocation";
+            startLocation.Size = new Size(278, 37);
+            startLocation.TabIndex = 8;
+            // 
+            // proName
+            // 
+            proName.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            proName.FormattingEnabled = true;
+            proName.Location = new Point(135, 26);
+            proName.Name = "proName";
+            proName.Size = new Size(278, 44);
+            proName.TabIndex = 13;
+            // 
+            // addProBtn
+            // 
+            addProBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            addProBtn.Location = new Point(26, 91);
+            addProBtn.Name = "addProBtn";
+            addProBtn.Size = new Size(572, 60);
+            addProBtn.TabIndex = 14;
+            addProBtn.Text = "Add product to list";
+            addProBtn.UseVisualStyleBackColor = true;
+            addProBtn.Click += addProBtn_Click;
+            // 
+            // dgvProductList
+            // 
+            dgvProductList.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvProductList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvProductList.Location = new Point(26, 168);
+            dgvProductList.Name = "dgvProductList";
+            dgvProductList.RowHeadersWidth = 51;
+            dgvProductList.Size = new Size(572, 403);
+            dgvProductList.TabIndex = 15;
+            dgvProductList.CellDoubleClick += dgvProductList_CellDoubleClick;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label4.Location = new Point(26, 29);
+            label4.Name = "label4";
+            label4.Size = new Size(103, 36);
+            label4.TabIndex = 16;
+            label4.Text = "Products";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label5.Location = new Point(425, 29);
+            label5.Name = "label5";
+            label5.Size = new Size(101, 36);
+            label5.TabIndex = 17;
+            label5.Text = "Quantity";
+            // 
+            // proQTY
+            // 
+            proQTY.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            proQTY.Location = new Point(532, 29);
+            proQTY.Name = "proQTY";
+            proQTY.Size = new Size(66, 37);
+            proQTY.TabIndex = 18;
+            // 
             // CreateJobForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1113, 599);
+            Controls.Add(proQTY);
+            Controls.Add(label5);
+            Controls.Add(label4);
+            Controls.Add(dgvProductList);
+            Controls.Add(addProBtn);
+            Controls.Add(proName);
             Controls.Add(label3);
             Controls.Add(jobDate);
             Controls.Add(startLocation);
@@ -116,6 +189,8 @@
             Controls.Add(destinationLocation);
             Name = "CreateJobForm";
             Text = "CreateJobForm";
+            ((System.ComponentModel.ISupportInitialize)dgvProductList).EndInit();
+            ((System.ComponentModel.ISupportInitialize)proQTY).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -126,8 +201,14 @@
         private Label label1;
         private Button createJobBtn;
         private Label label2;
-        private TextBox startLocation;
         private MonthCalendar jobDate;
         private Label label3;
+        private TextBox startLocation;
+        private ComboBox proName;
+        private Button addProBtn;
+        private DataGridView dgvProductList;
+        private Label label4;
+        private Label label5;
+        private NumericUpDown proQTY;
     }
 }

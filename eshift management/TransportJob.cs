@@ -17,13 +17,14 @@ namespace eshift_management
         public DateTime JobDate { get; set; }
         public string Status { get; set; } = "Pending";
 
-        public bool SaveToDatabase()
+        public int SaveJobToDatabase()
         {
             using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
             {
                 conn.Open();
                 string query = "INSERT INTO Job (JobCustID, StartLocation, Destination, JobDate, Status) " +
-                               "VALUES (@CustomerID, @StartLocation, @Destination, @JobDate, @Status)";
+                               "VALUES (@CustomerID, @StartLocation, @Destination, @JobDate, @Status);" +
+                               "SELECT CAST(SCOPE_IDENTITY() AS int);";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@CustomerID", CustomerID);
                 cmd.Parameters.AddWithValue("@StartLocation", StartLocation);
@@ -31,8 +32,16 @@ namespace eshift_management
                 cmd.Parameters.AddWithValue("@JobDate", JobDate);
                 cmd.Parameters.AddWithValue("@Status", Status);
 
-                int result = cmd.ExecuteNonQuery();
-                return result > 0;
+                object result = cmd.ExecuteScalar();
+
+                if (result != null && int.TryParse(result.ToString(), out int newJobID))
+                {
+                    return newJobID;
+                }
+                else
+                {
+                    return -1; // Failed to insert or retrieve ID
+                }
             }
         }
     }

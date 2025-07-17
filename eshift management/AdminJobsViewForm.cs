@@ -55,6 +55,19 @@ namespace eshift_management
 
             dgvJobs.Columns.Add(btnColumn);
 
+
+            // Remove if already exists
+            if (dgvJobs.Columns.Contains("DeclineBtn"))
+                dgvJobs.Columns.Remove("DeclineBtn");
+
+            // Create decline button column
+            DataGridViewButtonColumn declineBtn = new DataGridViewButtonColumn();
+            declineBtn.Name = "DeclineBtn";
+            declineBtn.HeaderText = "Decline";
+            declineBtn.Text = "Decline";
+            declineBtn.UseColumnTextForButtonValue = true;
+            dgvJobs.Columns.Add(declineBtn);
+
         }
 
         // Add color for each row according to status
@@ -83,17 +96,62 @@ namespace eshift_management
 
         private void dgvJobs_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && dgvJobs.Columns[e.ColumnIndex].Name == "ChangeStatus")
+            if (e.RowIndex < 0)
+                return;
+
+            string columnName = dgvJobs.Columns[e.ColumnIndex].Name;
+            int jobID = Convert.ToInt32(dgvJobs.Rows[e.RowIndex].Cells["JobID"].Value);
+            string currentStatus = dgvJobs.Rows[e.RowIndex].Cells["Status"].Value?.ToString() ?? "";
+            DateTime jobDate = Convert.ToDateTime(dgvJobs.Rows[e.RowIndex].Cells["JobDate"].Value);
+
+            // Handle Change Status (Assign)
+            if (columnName == "ChangeStatus")
             {
-                // Get selected job ID and status
-                int jobID = Convert.ToInt32(dgvJobs.Rows[e.RowIndex].Cells["JobID"].Value);
-                string currentStatus = dgvJobs.Rows[e.RowIndex].Cells["Status"].Value?.ToString() ?? "";
-
-                // Create instance of AssignTransportUnitForm and pass data
-                AssignTransportUnitForm assignForm = new AssignTransportUnitForm(jobID, currentStatus);
-
-                // Show form as dialog or normal window based on your need
+                AdminLoadCreate assignForm = new AdminLoadCreate(jobID, currentStatus, jobDate);
                 assignForm.ShowDialog();
+
+                //AssignTransportUnitForm assignForm = new AssignTransportUnitForm(jobID, currentStatus, jobDate);
+                //assignForm.ShowDialog();
+            }
+
+            // Handle Decline (only if pending)
+            else if (columnName == "DeclineBtn")
+            {
+                if (currentStatus != "Pending")
+                {
+                    MessageBox.Show("Only pending jobs can be declined.");
+                    return;
+                }
+
+                DialogResult result = MessageBox.Show("Are you sure you want to decline this job?", "Confirm Decline", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    string query = "UPDATE Job SET Status = 'Declined' WHERE JobID = @JobID";
+                    using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+                    {
+                        SqlCommand cmd = new SqlCommand(query, conn);
+                        cmd.Parameters.AddWithValue("@JobID", jobID);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    MessageBox.Show("Job has been declined.");
+                    LoadAllJobsIntoGrid(); // Refresh
+                }
+            }
+        }
+
+        private void dgvJobs_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dgvJobs.Columns[e.ColumnIndex].Name == "DeclineBtn" && e.RowIndex >= 0)
+            {
+                var status = dgvJobs.Rows[e.RowIndex].Cells["Status"].Value?.ToString();
+                if (status != "Pending")
+                {
+                    dgvJobs.Rows[e.RowIndex].Cells[e.ColumnIndex].ReadOnly = true;
+                    dgvJobs.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = Color.Gray;
+                    dgvJobs.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.SelectionForeColor = Color.Gray;
+                }
             }
         }
     }
