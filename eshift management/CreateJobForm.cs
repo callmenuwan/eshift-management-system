@@ -13,11 +13,14 @@ namespace eshift_management
 {
     public partial class CreateJobForm : Form
     {
+        private Form1 mainForm;
         private DataTable productTable;
 
-        public CreateJobForm()
+        public CreateJobForm(Form1 mainFormReference)
         {
             InitializeComponent();
+            mainForm = mainFormReference;
+
             productTable = new DataTable();
             LoadProductsIntoCombo();
             InitializeProductTable();
@@ -46,46 +49,10 @@ namespace eshift_management
 
             int newJobID = job.SaveJobToDatabase();  // Save job and get JobID
 
-            if (newJobID > 0)
-            {
-                // Now save products into JobProducts table
-                //bool allInserted = true;
+            // Step 2: Save Products for this Job
+            JobProduct.SaveProductsToJob(newJobID, dgvProductList);
 
-                using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
-                {
-                    conn.Open();
-
-                    foreach (DataRow row in productTable.Rows)
-                    {
-                        try
-                        {
-                            int productID = Convert.ToInt32(row["ProductID"]);
-                            int quantity = Convert.ToInt32(row["Quantity"]);
-
-                            MessageBox.Show($"Inserting: JobID={newJobID}, ProductID={productID}, Quantity={quantity}");
-
-                            string query = "INSERT INTO JobProduct (JobID, ProductID, Quantity) VALUES (@JobID, @ProductID, @Quantity)";
-                            using (SqlCommand cmd = new SqlCommand(query, conn))
-                            {
-                                cmd.Parameters.AddWithValue("@JobID", newJobID);
-                                cmd.Parameters.AddWithValue("@ProductID", productID);
-                                cmd.Parameters.AddWithValue("@Quantity", quantity);
-
-                                int rows = cmd.ExecuteNonQuery();
-                                MessageBox.Show($"Rows affected: {rows}");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Insert failed: {ex.Message}");
-                        }
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Failed to save job.");
-            }
+            MessageBox.Show($"Job Created. Job ID: {newJobID}");
         }
 
 

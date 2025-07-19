@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Azure.Core.HttpHeader;Z
+using static Azure.Core.HttpHeader;
 
 namespace eshift_management
 {
@@ -34,6 +34,34 @@ namespace eshift_management
 
             // Optionally, load job details here using jobID
             LoadJobDetails();
+
+
+
+            InitializeLoadAssignmentGrid();
+        }
+
+        private void InitializeLoadAssignmentGrid()
+        {
+            dgvLoadAssignments.Columns.Clear();
+
+            dgvLoadAssignments.Columns.Add("LoadID", "Load ID");
+            dgvLoadAssignments.Columns["LoadID"].ReadOnly = true;
+
+            AddComboBoxColumn("Driver", "Driver");
+            AddComboBoxColumn("Assistant", "Assistant");
+            AddComboBoxColumn("Lorry", "Lorry");
+            AddComboBoxColumn("Container", "Container");
+        }
+
+        private void AddComboBoxColumn(string name, string header)
+        {
+            DataGridViewComboBoxColumn cmb = new DataGridViewComboBoxColumn();
+            cmb.Name = name + "Column";
+            cmb.HeaderText = header;
+            cmb.DataSource = null; // will bind later
+            cmb.DisplayMember = "Name"; // custom class property
+            cmb.ValueMember = "ID";
+            dgvLoadAssignments.Columns.Add(cmb);
         }
 
         private void AssignTransportUnitForm_Load(object sender, EventArgs e)
@@ -41,7 +69,100 @@ namespace eshift_management
             LoadJobDetails();
             LoadAllAvailableUnits();
             LoadNext7DaysAvailability();
+
+
+            jobDatePicker.Value = jobDate;
+
+            InitializeLoadAssignmentGrid();
+
+            List<int> loadIDs = ShowLoadIDsForJob(jobIDc);
+            foreach (int loadID in loadIDs)
+            {
+                dgvLoadAssignments.Rows.Add(loadID);
+            }
+
+            LoadAvailableUnitsForDate(jobDatePicker.Value);
         }
+
+        private List<int> ShowLoadIDsForJob(int jobId)
+        {
+            List<int> loadIDs = new List<int>();
+            using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+            {
+                string query = "SELECT LoadID FROM Load WHERE JobID = @JobID";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@JobID", jobId);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    loadIDs.Add(reader.GetInt32(0));
+                }
+            }
+            return loadIDs;
+        }
+
+        private void LoadAvailableUnitsForDate(DateTime date)
+        {
+            var drivers = GetAvailableUnits("Driver", date);
+            var assistants = GetAvailableUnits("Assistant", date);
+            var lorries = GetAvailableUnits("Lorrie", date);
+            var containers = GetAvailableUnits("Container", date);
+
+            // Check counts
+            int loadCount = dgvLoadAssignments.Rows.Count;
+            if (drivers.Count < loadCount || assistants.Count < loadCount || lorries.Count < loadCount || containers.Count < loadCount)
+            {
+                MessageBox.Show("Not enough available units to assign all loads. Please decline the job.");
+                assignUnitsbtn.Enabled = false;
+                dgvLoadAssignments.Enabled = false;
+                return;
+            }
+
+            assignUnitsbtn.Enabled = true;
+            dgvLoadAssignments.Enabled = true;
+
+            // Bind to each ComboBox column
+            ((DataGridViewComboBoxColumn)dgvLoadAssignments.Columns["DriverColumn"]).DataSource = drivers;
+            ((DataGridViewComboBoxColumn)dgvLoadAssignments.Columns["AssistantColumn"]).DataSource = assistants;
+            ((DataGridViewComboBoxColumn)dgvLoadAssignments.Columns["LorryColumn"]).DataSource = lorries;
+            ((DataGridViewComboBoxColumn)dgvLoadAssignments.Columns["ContainerColumn"]).DataSource = containers;
+        }
+
+        public class UnitItem
+        {
+            public int ID { get; set; }
+            //public string? Name { get; set; } // Example: "John (Driver1)"
+        }
+
+        private List<UnitItem> GetAvailableUnits(string type, DateTime date)
+        {
+            List<UnitItem> list = new List<UnitItem>();
+            using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+            {
+                string query = $"SELECT {type}ID FROM {type} WHERE {type}ID NOT IN (SELECT {type}ID FROM JobAssignment WHERE AssignmentDate = @Date)";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Date", date);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    list.Add(new UnitItem
+                    {
+                        ID = reader.GetInt32(0),
+                        //Name = reader.GetString(1)
+                    });
+                }
+            }
+            return list;
+        }
+
+
+
+
+
+
+
 
         //General Method to Load Combo Boxes
         private void LoadAvailableCombo(string tableName, string idField, string nameField, DateTime jobDate, ComboBox comboBox)
@@ -194,6 +315,21 @@ namespace eshift_management
         {
             AdminJobsViewForm.Show(); // only needed if it was hidden
             this.Close();
+        }
+
+        private void dgvLoadAssignments_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void jobDatePicker_ValueChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvNext7DaysAvailability_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

@@ -13,145 +13,206 @@ namespace eshift_management
 {
     public partial class AdminJobsViewForm : Form
     {
+        private Form1 mainForm;
 
-        public AdminJobsViewForm()
+        public AdminJobsViewForm(Form1 mainFormReference)
         {
             InitializeComponent();
-            this.dgvJobs.RowPrePaint += dgvJobs_RowPrePaint;
+            mainForm = mainFormReference;
         }
 
         private void AdminJobsViewForm_Load(object sender, EventArgs e)
         {
             LoadAllJobsIntoGrid();
+            LoadStatusFilterOptions();
         }
 
 
         // LoaderOptimization Jobs in to datagrid view
 
-        private void LoadAllJobsIntoGrid()
+        private void LoadAllJobsIntoGrid(string statusFilter = "All")
         {
-            string query = "SELECT * FROM Job ORDER BY JobDate DESC";
+            string query;
+
+            if (statusFilter == "All")
+            {
+                query = @"
+                        SELECT 
+                            J.JobID,
+                            C.CusName,
+                            J.JobDate,
+                            J.Status,
+                            J.LoadStatus
+                        FROM Job J
+                        INNER JOIN Customer C ON J.JobCustID = C.CustID
+                        ORDER BY J.JobDate DESC";
+            }
+            else
+            {
+                query = @"
+                        SELECT 
+                            J.JobID,
+                            C.CusName,
+                            J.JobDate,
+                            J.Status,
+                            J.LoadStatus
+                        FROM Job J
+                        INNER JOIN Customer C ON J.JobCustID = C.CustID
+                        WHERE J.Status = @Status
+                        ORDER BY J.JobDate DESC";
+            }
+
 
             using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                if (statusFilter != "All")
+                {
+                    cmd.Parameters.AddWithValue("@Status", statusFilter);
+                }
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
+                dgvAllJobs.DataSource = dt;
 
-                dgvJobs.DataSource = dt;
+                ApplyStatusColors();
             }
 
-
-            // First remove existing button column to avoid duplicates
-            if (dgvJobs.Columns.Contains("ChangeStatus"))
-                dgvJobs.Columns.Remove("ChangeStatus");
-
-            // Create a new button column
-            DataGridViewButtonColumn btnColumn = new DataGridViewButtonColumn();
-            btnColumn.HeaderText = "Action";
-            btnColumn.Name = "ChangeStatus";
-            btnColumn.Text = "Change Status";
-            btnColumn.UseColumnTextForButtonValue = true;
-
-            dgvJobs.Columns.Add(btnColumn);
-
-
-            // Remove if already exists
-            if (dgvJobs.Columns.Contains("DeclineBtn"))
-                dgvJobs.Columns.Remove("DeclineBtn");
-
-            // Create decline button column
-            DataGridViewButtonColumn declineBtn = new DataGridViewButtonColumn();
-            declineBtn.Name = "DeclineBtn";
-            declineBtn.HeaderText = "Decline";
-            declineBtn.Text = "Decline";
-            declineBtn.UseColumnTextForButtonValue = true;
-            dgvJobs.Columns.Add(declineBtn);
-
         }
-
-        // Add color for each row according to status
-
-        private void dgvJobs_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        private void ApplyStatusColors()
         {
-            var grid = sender as DataGridView;
-            if (grid.Rows[e.RowIndex].DataBoundItem is DataRowView rowView)
+            foreach (DataGridViewRow row in dgvAllJobs.Rows)
             {
-                string status = rowView["Status"].ToString();
-
-                switch (status)
+                if (row.Cells["Status"].Value != null)
                 {
-                    case "Pending":
-                        grid.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Yellow;
-                        break;
-                    case "Approved":
-                        grid.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen;
-                        break;
-                    case "Declined":
-                        grid.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightCoral;
-                        break;
+                    string status = row.Cells["Status"].Value.ToString();
+
+                    switch (status)
+                    {
+                        case "Pending":
+                            row.DefaultCellStyle.BackColor = Color.Yellow;
+                            break;
+                        case "Approved":
+                            row.DefaultCellStyle.BackColor = Color.LightGreen;
+                            break;
+                        case "Declined":
+                            row.DefaultCellStyle.BackColor = Color.LightCoral;
+                            break;
+                        default:
+                            row.DefaultCellStyle.BackColor = Color.White;
+                            break;
+                    }
                 }
             }
         }
 
-        private void dgvJobs_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void LoadStatusFilterOptions()
         {
-            if (e.RowIndex < 0)
-                return;
+            cmbStatusFilter.Items.Clear();
+            cmbStatusFilter.Items.Add("All");
+            cmbStatusFilter.Items.Add("Pending");
+            cmbStatusFilter.Items.Add("Approved");
+            cmbStatusFilter.Items.Add("Declined");
+            cmbStatusFilter.SelectedIndex = 0; // Default to "All"
+        }
 
-            string columnName = dgvJobs.Columns[e.ColumnIndex].Name;
-            int jobID = Convert.ToInt32(dgvJobs.Rows[e.RowIndex].Cells["JobID"].Value);
-            string currentStatus = dgvJobs.Rows[e.RowIndex].Cells["Status"].Value?.ToString() ?? "";
-            DateTime jobDate = Convert.ToDateTime(dgvJobs.Rows[e.RowIndex].Cells["JobDate"].Value);
+        private void filterBtn_Click(object sender, EventArgs e)
+        {
+            string selectedStatus = cmbStatusFilter.SelectedItem.ToString();
+            LoadAllJobsIntoGrid(selectedStatus);
+        }
 
-            // Handle Change Status (Assign)
-            if (columnName == "ChangeStatus")
+        private void createLoadsBtn_Click(object sender, EventArgs e)
+        {
+            if (dgvAllJobs.CurrentRow != null)
             {
-                AdminLoadCreate assignForm = new AdminLoadCreate(jobID, currentStatus, jobDate);
-                assignForm.ShowDialog();
+                int selectedJobID = Convert.ToInt32(dgvAllJobs.CurrentRow.Cells["JobID"].Value);
+                string? currentStatus = dgvAllJobs.CurrentRow.Cells["Status"].Value.ToString();
+                DateTime jobDate = Convert.ToDateTime(dgvAllJobs.CurrentRow.Cells["JobDate"].Value);
 
-                //AssignTransportUnitForm assignForm = new AssignTransportUnitForm(jobID, currentStatus, jobDate);
-                //assignForm.ShowDialog();
+                // Open AdminLoadCreateForm and pass JobID
+                mainForm.LoadChildForm(new AdminLoadCreate(mainForm, selectedJobID, currentStatus, jobDate));
             }
-
-            // Handle Decline (only if pending)
-            else if (columnName == "DeclineBtn")
+            else
             {
-                if (currentStatus != "Pending")
-                {
-                    MessageBox.Show("Only pending jobs can be declined.");
-                    return;
-                }
+                MessageBox.Show("Please select a job from the list.");
+            }
+        }
 
-                DialogResult result = MessageBox.Show("Are you sure you want to decline this job?", "Confirm Decline", MessageBoxButtons.YesNo);
+        private void delineBtn_Click(object sender, EventArgs e)
+        {
+            if (dgvAllJobs.CurrentRow != null)
+            {
+                int selectedJobID = Convert.ToInt32(dgvAllJobs.CurrentRow.Cells["JobID"].Value);
+
+                DialogResult result = MessageBox.Show("Are you sure you want to decline this job?", "Confirm", MessageBoxButtons.YesNo);
+
                 if (result == DialogResult.Yes)
                 {
-                    string query = "UPDATE Job SET Status = 'Declined' WHERE JobID = @JobID";
-                    using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
-                    {
-                        SqlCommand cmd = new SqlCommand(query, conn);
-                        cmd.Parameters.AddWithValue("@JobID", jobID);
-                        conn.Open();
-                        cmd.ExecuteNonQuery();
-                    }
-
-                    MessageBox.Show("Job has been declined.");
-                    LoadAllJobsIntoGrid(); // Refresh
+                    DeclineJob(selectedJobID);
+                    LoadAllJobsIntoGrid(cmbStatusFilter.SelectedItem.ToString());
                 }
+            }
+            else
+            {
+                MessageBox.Show("Please select a job to decline.");
+            }
+        }
+        private void DeclineJob(int jobID)
+        {
+            string query = "UPDATE Job SET Status = 'Declined' WHERE JobID = @JobID";
+
+            using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@JobID", jobID);
+                conn.Open();
+                cmd.ExecuteNonQuery();
             }
         }
 
-        private void dgvJobs_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private void assignUnitsBtn_Click(object sender, EventArgs e)
         {
-            if (dgvJobs.Columns[e.ColumnIndex].Name == "DeclineBtn" && e.RowIndex >= 0)
+            if (dgvAllJobs.CurrentRow != null)
             {
-                var status = dgvJobs.Rows[e.RowIndex].Cells["Status"].Value?.ToString();
-                if (status != "Pending")
+                int selectedJobID = Convert.ToInt32(dgvAllJobs.CurrentRow.Cells["JobID"].Value);
+                string? currentStatus = dgvAllJobs.CurrentRow.Cells["Status"].Value.ToString();
+                DateTime jobDate = Convert.ToDateTime(dgvAllJobs.CurrentRow.Cells["JobDate"].Value);
+
+                mainForm.LoadChildForm(new AdminLoadAssingment(mainForm, selectedJobID, currentStatus, jobDate));
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Please select a job from the list.");
+            }
+        }
+
+        private void dgvAllJobs_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvAllJobs.CurrentRow != null && dgvAllJobs.CurrentRow.Cells["LoadStatus"].Value != DBNull.Value)
+            {
+                bool loadStatus = Convert.ToBoolean(dgvAllJobs.CurrentRow.Cells["LoadStatus"].Value);
+
+                if (loadStatus)
                 {
-                    dgvJobs.Rows[e.RowIndex].Cells[e.ColumnIndex].ReadOnly = true;
-                    dgvJobs.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = Color.Gray;
-                    dgvJobs.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.SelectionForeColor = Color.Gray;
+                    // If LoadStatus == true → disable createLoads, enable assignUnits
+                    createLoadsBtn.Enabled = false;
+                    assignUnitsBtn.Enabled = true;
                 }
+                else
+                {
+                    // If LoadStatus == false → enable createLoads, disable assignUnits
+                    createLoadsBtn.Enabled = true;
+                    assignUnitsBtn.Enabled = false;
+                }
+            }
+            else
+            {
+                // If no valid row selected
+                createLoadsBtn.Enabled = false;
+                assignUnitsBtn.Enabled = false;
             }
         }
     }

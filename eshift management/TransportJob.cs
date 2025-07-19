@@ -19,30 +19,40 @@ namespace eshift_management
 
         public int SaveJobToDatabase()
         {
-            using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+            try
             {
-                conn.Open();
-                string query = "INSERT INTO Job (JobCustID, StartLocation, Destination, JobDate, Status) " +
-                               "VALUES (@CustomerID, @StartLocation, @Destination, @JobDate, @Status);" +
-                               "SELECT CAST(SCOPE_IDENTITY() AS int);";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@CustomerID", CustomerID);
-                cmd.Parameters.AddWithValue("@StartLocation", StartLocation);
-                cmd.Parameters.AddWithValue("@Destination", Destination);
-                cmd.Parameters.AddWithValue("@JobDate", JobDate);
-                cmd.Parameters.AddWithValue("@Status", Status);
+                // Insert transport Job details to database and return newJobID
 
-                object result = cmd.ExecuteScalar();
+                using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+                {
+                    conn.Open();
+                    string query = "INSERT INTO Job (JobCustID, StartLocation, Destination, JobDate, Status) " +
+                                   "VALUES (@CustomerID, @StartLocation, @Destination, @JobDate, @Status);" +
+                                   "SELECT CAST(SCOPE_IDENTITY() AS int);";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@CustomerID", CustomerID);
+                    cmd.Parameters.AddWithValue("@StartLocation", StartLocation);
+                    cmd.Parameters.AddWithValue("@Destination", Destination);
+                    cmd.Parameters.AddWithValue("@JobDate", JobDate);
+                    cmd.Parameters.AddWithValue("@Status", Status);
 
-                if (result != null && int.TryParse(result.ToString(), out int newJobID))
-                {
-                    return newJobID;
-                }
-                else
-                {
-                    return -1; // Failed to insert or retrieve ID
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null && int.TryParse(result.ToString(), out int newJobID))
+                    {
+                        return newJobID;
+                    }
+                    else
+                    {
+                        return -1; // Failed to insert or retrieve ID
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saving products: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return -1; // Fallback return if exception occurred
         }
     }
 }

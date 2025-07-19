@@ -45,8 +45,11 @@ namespace eshift_management
                     LoggedInAdmin = adminUser;
                     MessageBox.Show("Admin login successful!");
 
-                    AdminDashboard adminDashboard = new AdminDashboard();
-                    adminDashboard.Show();
+                    //AdminDashboard adminDashboard = new AdminDashboard();
+                    //adminDashboard.Show();
+
+                    Form1 mainForm = new Form1();
+                    mainForm.Show();
                     this.Hide();
                 }
                 else
@@ -63,8 +66,11 @@ namespace eshift_management
                     LoggedInCustomer = customerUser;
                     MessageBox.Show("Customer login successful!");
 
-                    CustomerDashboard customerDashboard = new CustomerDashboard();
-                    customerDashboard.Show();
+                    //CustomerDashboard customerDashboard = new CustomerDashboard();
+                    //customerDashboard.Show();
+
+                    Form1 mainForm = new Form1();
+                    mainForm.Show();
                     this.Hide();
                 }
                 else
@@ -72,6 +78,16 @@ namespace eshift_management
                     MessageBox.Show("Invalid Customer credentials.");
                 }
             }
+        }
+
+        private void Login_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void closeBtn_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

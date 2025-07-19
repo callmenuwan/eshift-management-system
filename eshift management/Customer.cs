@@ -16,7 +16,7 @@ namespace eshift_management
             {
                 conn.Open();
 
-                // SQL query to match entered email and password
+                // SQL query to check if a customer exists with the provided email and password
 
                 string query = "SELECT * FROM Customer WHERE CusEmail = @inputEmail AND CusPassword = @inputPassword";
                 SqlCommand cmd = new SqlCommand(query, conn);
@@ -29,9 +29,11 @@ namespace eshift_management
 
                 SqlDataReader reader = cmd.ExecuteReader();
 
+                // If a matching customer record is found
+
                 if (reader.Read())
                 {
-                    // Load admin data from database to this object
+                    // Map values from database record to the current Customer object
 
                     this.UId = Convert.ToInt32(reader["CustID"]); 
                     this.Name = reader["CusName"]?.ToString() ?? "";
@@ -40,6 +42,9 @@ namespace eshift_management
                     return true;
                 }
                 conn.Close();
+
+                // Return false if no matching record found (login failed)
+
                 return false;
             }
         }

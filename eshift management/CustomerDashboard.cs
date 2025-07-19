@@ -13,17 +13,19 @@ namespace eshift_management
 {
     public partial class CustomerDashboard : Form
     {
-        public CustomerDashboard()
+        private Form1 mainForm;
+
+        public CustomerDashboard(Form1 mainFormReference)
         {
             InitializeComponent();
+            mainForm = mainFormReference;
         }
 
         private void jobFormBtn_Click(object sender, EventArgs e)
         {
             if (Login.LoggedInCustomer != null)
             {
-                CreateJobForm createJobForm = new CreateJobForm();
-                createJobForm.Show();
+                mainForm.LoadChildForm(new CreateJobForm(mainForm));
             }
             else
             {

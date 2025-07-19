@@ -49,16 +49,16 @@
             // 
             destinationLocation.BorderStyle = BorderStyle.FixedSingle;
             destinationLocation.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            destinationLocation.Location = new Point(786, 359);
+            destinationLocation.Location = new Point(660, 190);
             destinationLocation.Name = "destinationLocation";
-            destinationLocation.Size = new Size(278, 37);
+            destinationLocation.Size = new Size(404, 37);
             destinationLocation.TabIndex = 4;
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(626, 293);
+            label1.Location = new Point(653, 26);
             label1.Name = "label1";
             label1.Size = new Size(154, 36);
             label1.TabIndex = 5;
@@ -67,9 +67,9 @@
             // createJobBtn
             // 
             createJobBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            createJobBtn.Location = new Point(786, 502);
+            createJobBtn.Location = new Point(660, 571);
             createJobBtn.Name = "createJobBtn";
-            createJobBtn.Size = new Size(278, 60);
+            createJobBtn.Size = new Size(404, 60);
             createJobBtn.TabIndex = 6;
             createJobBtn.Text = "Create Job";
             createJobBtn.UseVisualStyleBackColor = true;
@@ -79,7 +79,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(626, 360);
+            label2.Location = new Point(652, 150);
             label2.Name = "label2";
             label2.Size = new Size(134, 36);
             label2.TabIndex = 7;
@@ -87,7 +87,7 @@
             // 
             // jobDate
             // 
-            jobDate.Location = new Point(802, 35);
+            jobDate.Location = new Point(802, 309);
             jobDate.Name = "jobDate";
             jobDate.TabIndex = 9;
             // 
@@ -95,7 +95,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label3.Location = new Point(626, 32);
+            label3.Location = new Point(660, 309);
             label3.Name = "label3";
             label3.Size = new Size(62, 36);
             label3.TabIndex = 10;
@@ -105,9 +105,9 @@
             // 
             startLocation.BorderStyle = BorderStyle.FixedSingle;
             startLocation.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            startLocation.Location = new Point(786, 293);
+            startLocation.Location = new Point(660, 67);
             startLocation.Name = "startLocation";
-            startLocation.Size = new Size(278, 37);
+            startLocation.Size = new Size(404, 37);
             startLocation.TabIndex = 8;
             // 
             // proName
@@ -122,7 +122,7 @@
             // addProBtn
             // 
             addProBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            addProBtn.Location = new Point(26, 91);
+            addProBtn.Location = new Point(26, 94);
             addProBtn.Name = "addProBtn";
             addProBtn.Size = new Size(572, 60);
             addProBtn.TabIndex = 14;
@@ -134,10 +134,10 @@
             // 
             dgvProductList.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvProductList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvProductList.Location = new Point(26, 168);
+            dgvProductList.Location = new Point(26, 190);
             dgvProductList.Name = "dgvProductList";
             dgvProductList.RowHeadersWidth = 51;
-            dgvProductList.Size = new Size(572, 403);
+            dgvProductList.Size = new Size(572, 441);
             dgvProductList.TabIndex = 15;
             dgvProductList.CellDoubleClick += dgvProductList_CellDoubleClick;
             // 
@@ -173,7 +173,8 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1113, 599);
+            BackColor = Color.Azure;
+            ClientSize = new Size(1113, 684);
             Controls.Add(proQTY);
             Controls.Add(label5);
             Controls.Add(label4);

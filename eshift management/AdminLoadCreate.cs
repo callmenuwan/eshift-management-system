@@ -12,8 +12,10 @@ using static eshift_management.Models;
 
 namespace eshift_management
 {
+
     public partial class AdminLoadCreate : Form
     {
+        private Form1 mainForm;
         private int jobID;
         private string currentStatus;
         private DateTime jobDate;
@@ -23,9 +25,10 @@ namespace eshift_management
         private List<LoadProduct> currentLoad = new List<LoadProduct>();
         private List<Load> loadList = new List<Load>();
 
-        public AdminLoadCreate(int jobID, string currentStatus, DateTime jobDate)
+        public AdminLoadCreate(Form1 mainFormReference, int jobID, string currentStatus, DateTime jobDate)
         {
             InitializeComponent();
+            mainForm = mainFormReference;
 
             this.jobID = jobID;
             this.currentStatus = currentStatus;
@@ -165,8 +168,64 @@ namespace eshift_management
 
         private void assignUnitBtn_Click(object sender, EventArgs e)
         {
-            AssignTransportUnitForm assignTransportUnitForm = new AssignTransportUnitForm(jobID, currentStatus, jobDate);
-            assignTransportUnitForm.ShowDialog();
+            if (loadList.Count == 0)
+            {
+                MessageBox.Show("Please create at least one load.");
+                return;
+            }
+            using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.conn))
+            {
+                conn.Open();
+                SqlTransaction tx = conn.BeginTransaction();
+
+                try
+                {
+                    foreach (var load in loadList)
+                    {
+                        SqlCommand cmd = new SqlCommand("INSERT INTO Load (JobID) OUTPUT INSERTED.LoadID VALUES (@jobId)", conn, tx);
+                        cmd.Parameters.AddWithValue("@jobId", jobID);
+                        int loadId = (int)cmd.ExecuteScalar();
+
+                        foreach (var prod in load.Products)
+                        {
+                            SqlCommand cmdProd = new SqlCommand("INSERT INTO LoadProduct (LoadID, ProductID, Quantity) VALUES (@lid, @pid, @qty)", conn, tx);
+                            cmdProd.Parameters.AddWithValue("@lid", loadId);
+                            cmdProd.Parameters.AddWithValue("@pid", prod.ProductID);
+                            cmdProd.Parameters.AddWithValue("@qty", prod.Quantity);
+                            cmdProd.ExecuteNonQuery();
+                        }
+                    }
+
+                    // Update job to Accepted
+                    SqlCommand updateCmd = new SqlCommand("UPDATE Job SET LoadStatus = 'True' WHERE JobID = @JobID", conn, tx);
+                    updateCmd.Parameters.AddWithValue("@JobID", jobID);
+                    updateCmd.ExecuteNonQuery();
+
+                    tx.Commit();
+                    MessageBox.Show("Loads created successfully!");
+
+                    mainForm.LoadChildForm(new AdminLoadAssingment(mainForm, jobID, currentStatus, jobDate));
+                    this.Close();
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        tx?.Rollback();
+                    }
+                    catch
+                    {
+                        // Ignore rollback exceptions
+                    }
+                    MessageBox.Show("Error saving loads: " + ex.Message);
+                }
+            }
+
+        }
+
+        private void AdminLoadCreate_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

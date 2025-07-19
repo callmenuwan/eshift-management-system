@@ -30,12 +30,13 @@
         {
             cusRegFormBtn = new Button();
             untiAssignFormBtn = new Button();
+            panelChart = new Panel();
             SuspendLayout();
             // 
             // cusRegFormBtn
             // 
             cusRegFormBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cusRegFormBtn.Location = new Point(148, 198);
+            cusRegFormBtn.Location = new Point(134, 469);
             cusRegFormBtn.Name = "cusRegFormBtn";
             cusRegFormBtn.Size = new Size(278, 60);
             cusRegFormBtn.TabIndex = 2;
@@ -46,7 +47,7 @@
             // untiAssignFormBtn
             // 
             untiAssignFormBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            untiAssignFormBtn.Location = new Point(148, 314);
+            untiAssignFormBtn.Location = new Point(459, 469);
             untiAssignFormBtn.Name = "untiAssignFormBtn";
             untiAssignFormBtn.Size = new Size(278, 60);
             untiAssignFormBtn.TabIndex = 3;
@@ -54,15 +55,27 @@
             untiAssignFormBtn.UseVisualStyleBackColor = true;
             untiAssignFormBtn.Click += untiAssignFormBtn_Click;
             // 
+            // panelChart
+            // 
+            panelChart.BackColor = Color.Transparent;
+            panelChart.Dock = DockStyle.Top;
+            panelChart.Location = new Point(0, 0);
+            panelChart.Name = "panelChart";
+            panelChart.Size = new Size(926, 361);
+            panelChart.TabIndex = 4;
+            // 
             // AdminDashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            BackColor = Color.Azure;
+            ClientSize = new Size(926, 543);
+            Controls.Add(panelChart);
             Controls.Add(untiAssignFormBtn);
             Controls.Add(cusRegFormBtn);
             Name = "AdminDashboard";
             Text = "AdminDashboard";
+            Load += AdminDashboard_Load;
             ResumeLayout(false);
         }
 
@@ -70,5 +83,6 @@
 
         private Button cusRegFormBtn;
         private Button untiAssignFormBtn;
+        private Panel panelChart;
     }
 }

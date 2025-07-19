@@ -36,7 +36,7 @@
             // jobFormBtn
             // 
             jobFormBtn.Font = new Font("Poppins", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            jobFormBtn.Location = new Point(256, 342);
+            jobFormBtn.Location = new Point(387, 328);
             jobFormBtn.Name = "jobFormBtn";
             jobFormBtn.Size = new Size(278, 60);
             jobFormBtn.TabIndex = 3;
@@ -59,6 +59,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.Azure;
             ClientSize = new Size(800, 450);
             Controls.Add(dgvCusJobs);
             Controls.Add(jobFormBtn);
